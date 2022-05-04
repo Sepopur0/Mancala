@@ -457,6 +457,7 @@ def winner(screen,whowin):
     screen.blit(font_number.render(option,False,white),(650-len(option)*6,500))
     drawbutton(screen,"Thoát",675,545)
     drawbutton(screen,"Chơi mới",475,545)
+    act=-1
     while True:
         for ev in pygame.event.get():
             if ev.type==MOUSEBUTTONDOWN:
