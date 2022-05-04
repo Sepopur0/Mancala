@@ -28,7 +28,7 @@ class GameState:
         self.board = board
         self.empty_1=empty_1
         self.empty_2=empty_2
-        self.call=call # set to 0 if scatter_stones is called
+        self.call=call # set to -99 if home option is called
         self.player1_score = player1_score
         self.player2_score = player2_score
         self.player1_debt = player1_debt
