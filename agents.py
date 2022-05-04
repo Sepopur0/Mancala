@@ -4,6 +4,7 @@ from data import *
 # INT_MAX = np.iinfo(np.int32).max
 # INT_MIN = np.iinfo(np.int32).min
 
+
 class GamePointer():
     def __init__(self, id, direction):
         self.id = id
@@ -24,11 +25,11 @@ class GamePointer():
 
 
 class GameState:
-    def __init__(self, board=INIT_BOARD,call=-1,empty_1=False,empty_2=False, player1_score=0, player2_score=0, player1_debt=0, player2_debt=0):
+    def __init__(self, board=INIT_BOARD, call=-1, empty_1=False, empty_2=False, player1_score=0, player2_score=0, player1_debt=0, player2_debt=0):
         self.board = board
-        self.empty_1=empty_1
-        self.empty_2=empty_2
-        self.call=call # set to -99 if home option is called
+        self.empty_1 = empty_1
+        self.empty_2 = empty_2
+        self.call = call  # set to -99 if home option is called
         self.player1_score = player1_score
         self.player2_score = player2_score
         self.player1_debt = player1_debt
@@ -43,11 +44,19 @@ class GameState:
 
     @property
     def player1_true_score(self):
-        return self.player1_score - self.player1_debt + self.player2_debt + np.sum(self.board[1:6])
+        return self.player1_score - self.player1_debt + self.player2_debt
 
     @property
     def player2_true_score(self):
-        return self.player2_score - self.player2_debt + self.player1_debt + np.sum(self.board[7:])
+        return self.player2_score - self.player2_debt + self.player1_debt
+
+    @property
+    def player1_final_score(self):
+        return self.player1_true_score + np.sum(self.board[1:6])
+
+    @property
+    def player2_final_score(self):
+        return self.player2_true_score + np.sum(self.board[7:])
 
     @property
     def heuristic_score(self):
@@ -68,8 +77,8 @@ class GameState:
     def find_winner(self, inplace=True):
         if self.is_end_state():
             # Handle debts
-            p1_score = self.player1_true_score
-            p2_score = self.player2_true_score
+            p1_score = self.player1_final_score
+            p2_score = self.player2_final_score
 
             if inplace:
                 self.player1_score = p1_score
@@ -295,7 +304,7 @@ class MinimaxAgent(Agent):
 
             return best_move, best_state, best_score
 
-        return minimax(self.gstate, self.dept, self.is_upside)[:2] #changes
+        return minimax(self.gstate, self.dept, self.is_upside)[:2]  # changes
 
 
 class AlphaBetaAgent(MinimaxAgent):
@@ -347,4 +356,5 @@ class AlphaBetaAgent(MinimaxAgent):
 
             return best_move, best_state, best_score
 
-        return minimax_alpha_beta(self.gstate, self.dept, self.is_upside)[:2] #changes
+        # changes
+        return minimax_alpha_beta(self.gstate, self.dept, self.is_upside)[:2]
