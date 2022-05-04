@@ -320,7 +320,7 @@ class AlphaBetaAgent(MinimaxAgent):
                         best_move = move
                         best_state = state
                         alpha = max(alpha, score)
-                        if alpha >= beta:
+                        if alpha > beta:
                             break
                     elif score == best_score:
                         candidates.append((move, state, score))
@@ -334,7 +334,7 @@ class AlphaBetaAgent(MinimaxAgent):
                         best_move = move
                         best_state = state
                         beta = min(beta, score)
-                        if beta <= alpha:
+                        if beta < alpha:
                             break
                     elif score == best_score:
                         candidates.append((move, state, score))
