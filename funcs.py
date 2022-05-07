@@ -1,6 +1,5 @@
 import data
 from agents import *
-import sys
 
 
 def start_screen(screen):  # 0 for p1 vs p2; 1 for p1 vs bot
@@ -152,15 +151,17 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
                             elif act == 15:
                                 direct = -1*(1-playturn)
                             change_board_coor(screen, 8, True)
+                            draw_state(screen,state,playturn,numofps,opt2)
                             point = GamePointer(cell, direct)
                             res = perform_action(
                                 state, point, playturn, numofps, opt2)
                             state = res
                             re = check_end(state, numofps)
                             if re != -99:
-                                return re
+                                return [re,state.player1_score,state.player2_score]
                             playturn = (numofps+playturn) % (numofps*2)
                             draw_state(screen, state, playturn, numofps, opt2)
+                            pygame.display.update()
                         init_human = False
                     elif ((act in range(3, 8) and playturn == 0) or (act in range(9, 14) and playturn == 2)) and state.board[act-2] != 0:
                         change_board_coor(screen, act, False)
@@ -177,7 +178,7 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
                         screen.blit(font.render("Trò chơi tạm dừng",
                                     False, scenery), (600, 590))
                 elif act == 1:
-                    return -2
+                    return [-2,0,0]
             elif ev.type == pygame.QUIT:
                 sys.exit()
         if playturn == 1:
@@ -191,7 +192,7 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
             state = perform_action(state, point, playturn, numofps, opt2)
             re = check_end(state, numofps)
             if re != -99:
-                return re
+                return [re,state.player1_score,state.player2_score]
             playturn = (numofps+playturn) % (numofps+1)
             draw_state(screen, state, playturn, numofps, opt2)
         is_upside = (playturn == 0)
@@ -206,6 +207,55 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
             pygame.display.update()
             pygame.time.delay(300)
             draw_state(screen, state, playturn, numofps, opt2)
+        pygame.display.update()
+
+def winner(screen, whowin,player1score,player2score):
+    screen.fill(rock_1)
+    bg_img = pygame.image.load('download.jpeg')
+    bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
+    bg_img.set_alpha(40)
+    screen.blit(bg_img, (0, 0))  
+    option = ""
+    score1="Điểm người chơi 1: "
+    score2="Điểm người chơi 2: "
+    if whowin == 1:
+        option = "Người chơi 1 thắng!"
+    elif whowin == 2:
+        option = "Agent thắng!"
+        score2=" Điểm Agent: "
+    elif whowin == 3:
+        option = "Người chơi 2 thắng!"
+    else:
+        option = "Đây là trận hòa!"
+        if whowin==0:
+            score2="Điểm Agent: "
+    text = font_end.render(option, False, boxcontent)
+    tet_coor = text.get_rect(center=(650, 410))
+    screen.blit(text, tet_coor)
+    text2=font_number.render(score1+str(player1score),False,boxcontent)
+    tet2_coor=text2.get_rect(center=(650,450))
+    screen.blit(text2,tet2_coor)
+    text3=font_number.render(score2+str(player2score),False,boxcontent)
+    tet3_coor=text3.get_rect(center=(650,490))
+    screen.blit(text3,tet3_coor)
+    drawbutton(screen, "Thoát", 675, 545)
+    drawbutton(screen, "Chơi mới", 475, 545)
+    act = -1
+    while True:
+        for ev in pygame.event.get():
+            if ev.type == MOUSEBUTTONDOWN:
+                mousepos = pygame.mouse.get_pos()
+                act = checkbox(mousepos, gamebutton_coor, 150, 40)
+                if act != -1:
+                    screen.blit(s_1, (475+act*200, 545))
+                    pygame.display.update()
+            elif ev.type == MOUSEBUTTONUP:
+                if act == 0:
+                    return -2
+                elif act == 1:
+                    sys.exit()
+            elif ev.type == pygame.QUIT:
+                sys.exit()
         pygame.display.update()
 
 
@@ -314,7 +364,10 @@ def check_end(state: GameState, numofps):
             else:
                 return 3
         elif winner == "Draw":
-            return 0
+            if numofps==1:
+                return 0
+            elif numofps==2:
+                return 10
         else:
             return -2
     if state.call == -99:
@@ -493,38 +546,3 @@ def draw_pile(screen, num, pos, special=1):
         draw_rock(screen, (x+74, y+32), 0, 2)
         draw_rock(screen, (x+73, y+26), 0, 0)
         draw_rock(screen, (x+48, y+59), 1, 1)
-
-
-def winner(screen, whowin):
-    screen.fill(scenery)
-    draw_grid(screen)
-    option = ""
-    if whowin == 1:
-        option = "Người chơi 1 thắng!"
-    elif whowin == 2:
-        option = "Agent thắng!"
-    elif whowin == 3:
-        option = "Người chơi 2 thắng!"
-    else:
-        option = "Đây là trận hòa!"
-    screen.blit(font_number.render(option, False, white),
-                (650-len(option)*6, 500))
-    drawbutton(screen, "Thoát", 675, 545)
-    drawbutton(screen, "Chơi mới", 475, 545)
-    act = -1
-    while True:
-        for ev in pygame.event.get():
-            if ev.type == MOUSEBUTTONDOWN:
-                mousepos = pygame.mouse.get_pos()
-                act = checkbox(mousepos, gamebutton_coor, 150, 40)
-                if act != -1:
-                    screen.blit(s_1, (475+act*200, 545))
-                    pygame.display.update()
-            elif ev.type == MOUSEBUTTONUP:
-                if act == 0:
-                    return -2
-                elif act == 1:
-                    sys.exit()
-            elif ev.type == pygame.QUIT:
-                sys.exit()
-        pygame.display.update()

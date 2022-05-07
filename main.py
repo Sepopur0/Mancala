@@ -12,9 +12,9 @@ def main():
         if step_2[1] == -2:
             continue
         step_3 = everything(screen, step_1, step_2[0], step_2[1])
-        if step_3 == -2:
+        if step_3[0] == -2:
             continue
-        step_fin = winner(screen, step_3)
+        step_fin = winner(screen, step_3[0],step_3[1],step_3[2])
         if step_fin == -2:
             continue
 
