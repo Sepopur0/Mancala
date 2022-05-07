@@ -2,7 +2,8 @@ import numpy as np
 import pygame
 # import math
 from pygame.constants import *
-
+import sys
+import random
 pygame.init()
 screen_width = 1300
 screen_height = 650
@@ -24,6 +25,7 @@ board_coor = [(930, 270), (815, 325), (705, 325), (595, 325), (485, 325),
 font = pygame.font.SysFont('calibri', 25, True, False)
 font_number = pygame.font.SysFont('calibri', 30, True, False)
 font_title = pygame.font.SysFont('opensansregular', 100, True, True)
+font_end = pygame.font.SysFont('opensansregular', 40, True, True)
 # colors
 black = (0, 0, 0)
 white = (255, 255, 255)
