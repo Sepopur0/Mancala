@@ -28,7 +28,6 @@ font_title = pygame.font.SysFont('opensansregular', 100, True, True)
 font_end = pygame.font.SysFont('calibri', 40, True, True)
 # colors
 black = (0, 0, 0)
-white = (255, 255, 255)
 boxcolor = (244, 199, 171)  # mau o
 scenery = (134, 84, 57)  # nen
 shading = (215, 177, 157)  # clickon
@@ -36,11 +35,7 @@ boxcontent = (64, 34, 24)  # mau chu va mau da
 rock_1 = (128, 128, 128)
 rock_2 = (90, 77, 65)
 rock = (54, 69, 79)
-red = (139, 0, 0)
-green = (0, 139, 0)
-blue = (0, 0, 139)
 playzonecolor = (198, 139, 89)
-# boxcontent=(64,34,24) #mau chu
 s_1 = pygame.Surface((150, 40))
 s_1.fill(rock_1)
 pygame.draw.rect(s_1, shading, pygame.Rect(
