@@ -10,8 +10,8 @@ def start_screen(screen):  # 0 for p1 vs p2; 1 for p1 vs bot
     text = font_title.render("Ô ăn quan", False, boxcontent)
     tet_coor = text.get_rect(center=(650, 200))
     screen.blit(text, tet_coor)
-    drawbutton(screen, "P1 vs. P2", 575, 300)
-    drawbutton(screen, "P1 vs. Agent", 575, 375)
+    drawbutton(screen, "PvP", 575, 300)
+    drawbutton(screen, "PvE", 575, 375)
     drawbutton(screen, "Thoát", 575, 450)
     pygame.display.update()
     act = -1
@@ -41,7 +41,7 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
     bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
     bg_img.set_alpha(40)
     screen.blit(bg_img, (0, 0))
-    screen.blit(font.render("Tùy chọn", False, boxcontent), (385, 475))
+    screen.blit(font.render("Tùy chọn", False, boxcontent), (405, 475))
     option = ""
     drawbutton(screen, "P1 trước", 375, 500)
     coor = []
@@ -51,7 +51,7 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
     else:
         option = "Agent trước"
         coor = option_coor_1
-        screen.blit(font.render("Độ khó", False, boxcontent), (385, 550))
+        screen.blit(font.render("Độ khó", False, boxcontent), (415, 550))
         drawbutton(screen, "Dễ", 375, 575)
     draw_grid(screen)
     drawbutton(screen, "Xác nhận", 775, 500)
