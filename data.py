@@ -25,7 +25,7 @@ board_coor = [(930, 270), (815, 325), (705, 325), (595, 325), (485, 325),
 font = pygame.font.SysFont('calibri', 25, True, False)
 font_number = pygame.font.SysFont('calibri', 30, True, False)
 font_title = pygame.font.SysFont('opensansregular', 100, True, True)
-font_end = pygame.font.SysFont('opensansregular', 40, True, True)
+font_end = pygame.font.SysFont('calibri', 40, True, True)
 # colors
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -42,7 +42,7 @@ blue = (0, 0, 139)
 playzonecolor = (198, 139, 89)
 # boxcontent=(64,34,24) #mau chu
 s_1 = pygame.Surface((150, 40))
-s_1.fill(scenery)
+s_1.fill(rock_1)
 pygame.draw.rect(s_1, shading, pygame.Rect(
     0, 0, button_width, button_height), 0, 40)
 pygame.Surface.set_alpha(s_1, 100)
