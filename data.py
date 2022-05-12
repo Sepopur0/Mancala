@@ -41,9 +41,6 @@ green = (0, 139, 0)
 blue = (0, 0, 139)
 playzonecolor = (198, 139, 89)
 # boxcontent=(64,34,24) #mau chu
-
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Ô ăn quan")
 s_1 = pygame.Surface((150, 40))
 s_1.fill(scenery)
 pygame.draw.rect(s_1, shading, pygame.Rect(
