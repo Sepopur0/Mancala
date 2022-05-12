@@ -231,6 +231,7 @@ def winner(screen, whowin, player1score, player2score):
     score2 = "Điểm người chơi 2: "
     if whowin % 2 == 0:
         score2 = "Điểm Agent: "
+        score1="Điểm của bạn: "
     if whowin == 0 or whowin == 1:
         option = "Người chơi 1 thắng!"
     elif whowin == 2:
@@ -455,28 +456,35 @@ def draw_state(screen, state: GameState, playturn, numofps, opt2):
     draw_grid(screen)
     drawbutton(screen, "Trang chính", 675, 545)
     drawbutton(screen, "Tạm dừng", 475, 545)
-    option = ""
+    option2 = ""
+    option1=""
     if numofps == 1:
         st = ""
+        option1="Bạn"
         if opt2 == 0:
             st = "Easy"
         elif opt2 == 1:
             st = "Intermediate"
         elif opt2 == 2:
             st = "Hard"
-        option = "Agent " + st
+        option2 = "Agent " + st
     else:
-        option = "Người chơi 2"
+        option2 = "Người chơi 2"
+        option1="Người chơi 1"
     for i in range(0, 12):
         if state.board[i] >= 5 and ((i == 0 and state.empty_1 == False) or (i == 6 and state.empty_2 == False)):
             draw_rock(screen, board_coor[i], 1, 2, special=True)
             draw_pile(screen, state.board[i]-5, board_coor[i], 0)
         else:
             draw_pile(screen, state.board[i], board_coor[i])
-    pygame.draw.rect(screen, white, (1100, 405, 185, 140), 5)
-    pygame.draw.rect(screen, white, (25, 105, 185, 140), 5)
-    screen.blit(font_number.render("Người chơi 1", False, white), (1105, 365))
-    screen.blit(font_number.render(option, False, white), (30, 65))
+    pygame.draw.rect(screen, white, (1100, 405, 185, 140), 5) 
+    pygame.draw.rect(screen, white, (25, 105, 185, 140), 5) 
+    oprender1=font_number.render(option1, False, white)
+    oprender2=font_number.render(option2, False, white)
+    text_rect_1 = oprender1.get_rect(center=(1192, 375))
+    text_rect_2 = oprender2.get_rect(center=(117, 75))
+    screen.blit(oprender1, text_rect_1)
+    screen.blit(oprender2, text_rect_2)
     screen.blit(font_number.render(
         "Điểm: " + str(state.player1_score), False, white), (1125, 440))
     screen.blit(font_number.render(
@@ -487,10 +495,14 @@ def draw_state(screen, state: GameState, playturn, numofps, opt2):
         "Nợ: " + str(state.player2_debt), False, white), (50, 190))
     if playturn == 0:
         pygame.draw.polygon(
-            screen, white, ((1080, 475), (1035, 450), (1035, 500)))
+            screen, (255,99,71), ((1080, 475), (1035, 450), (1035, 500)))
+        pygame.draw.polygon(
+            screen, black, ((1080, 475), (1035, 450), (1035, 500)),5)
     elif playturn == 1 or playturn == 2:
         pygame.draw.polygon(
-            screen, white, ((230, 175), (275, 150), (275, 200)))
+            screen, (255,99,71), ((230, 175), (275, 150), (275, 200)))
+        pygame.draw.polygon(
+            screen, black, ((230, 175), (275, 150), (275, 200)),5)
 
 
 # code is for color option; special is for big rock option
