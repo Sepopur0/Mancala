@@ -17,11 +17,7 @@ class GamePointer():
         return GamePointer(self.id, self.direction)
 
     def next(self):
-        self.id += self.direction
-        if self.id < 0:
-            self.id = 11
-        elif self.id > 11:
-            self.id = 0
+        self.id = (self.id + self.direction) % 12
 
 
 class GameState:
@@ -251,7 +247,7 @@ class GreedyAgent(Agent):
                 x for x in succersors if x[1].player1_score == best_score]
 
         idx = np.random.randint(len(candidates))
-        return candidates[idx][:2]
+        return candidates[idx]
 
 
 class MinimaxAgent(Agent):
@@ -304,7 +300,7 @@ class MinimaxAgent(Agent):
 
             return best_move, best_state, best_score
 
-        return minimax(self.gstate, self.dept, self.is_upside)[:2]  # changes
+        return minimax(self.gstate, self.dept, self.is_upside)[:2]
 
 
 class AlphaBetaAgent(MinimaxAgent):
@@ -356,5 +352,4 @@ class AlphaBetaAgent(MinimaxAgent):
 
             return best_move, best_state, best_score
 
-        # changes
         return minimax_alpha_beta(self.gstate, self.dept, self.is_upside)[:2]
