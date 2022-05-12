@@ -145,20 +145,21 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
                     if init_human:
                         if act == -1:
                             change_board_coor(screen, 8, True)
+                            draw_state(screen, state, playturn, numofps, opt2)
                         else:
                             if act == 14:
                                 direct = 1*(1-playturn)
                             elif act == 15:
                                 direct = -1*(1-playturn)
                             change_board_coor(screen, 8, True)
-                            draw_state(screen,state,playturn,numofps,opt2)
+                            draw_state(screen, state, playturn, numofps, opt2)
                             point = GamePointer(cell, direct)
                             res = perform_action(
-                                state, point, playturn, numofps, opt2)
+                                screen, state, point, playturn, numofps, opt2)
                             state = res
-                            re = check_end(state, numofps)
+                            re = check_end(screen, state, numofps)
                             if re != -99:
-                                return [re,state.player1_score,state.player2_score]
+                                return [re, state.player1_score, state.player2_score]
                             playturn = (numofps+playturn) % (numofps*2)
                             draw_state(screen, state, playturn, numofps, opt2)
                             pygame.display.update()
@@ -178,7 +179,7 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
                         screen.blit(font.render("Trò chơi tạm dừng",
                                     False, scenery), (600, 590))
                 elif act == 1:
-                    return [-2,0,0]
+                    return [-2, 0, 0]
             elif ev.type == pygame.QUIT:
                 sys.exit()
         if playturn == 1:
@@ -187,12 +188,21 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
             is_upside = (point.id in range(1, 6))
             if state.no_more_moves(is_upside):
                 state.scatter_stones(is_upside)
+                if is_upside:
+                    for coor in board_coor[1:6]:
+                        screen.blit(s, coor)
+                else:
+                    for coor in board_coor[7:]:
+                        screen.blit(s, coor)
+                pygame.display.update()
+                pygame.time.delay(300)
                 draw_state(screen, state, playturn, numofps, opt2)
             pygame.display.update()
-            state = perform_action(state, point, playturn, numofps, opt2)
-            re = check_end(state, numofps)
+            state = perform_action(screen, state, point,
+                                   playturn, numofps, opt2)
+            re = check_end(screen, state, numofps)
             if re != -99:
-                return [re,state.player1_score,state.player2_score]
+                return [re, state.player1_score, state.player2_score]
             playturn = (numofps+playturn) % (numofps+1)
             draw_state(screen, state, playturn, numofps, opt2)
         is_upside = (playturn == 0)
@@ -209,35 +219,35 @@ def everything(screen, numofps, opt, opt2):  # opt is for whofirst; opt2 is diff
             draw_state(screen, state, playturn, numofps, opt2)
         pygame.display.update()
 
-def winner(screen, whowin,player1score,player2score):
+
+def winner(screen, whowin, player1score, player2score):
     screen.fill(rock_1)
     bg_img = pygame.image.load('download.jpeg')
     bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
     bg_img.set_alpha(40)
-    screen.blit(bg_img, (0, 0))  
+    screen.blit(bg_img, (0, 0))
     option = ""
-    score1="Điểm người chơi 1: "
-    score2="Điểm người chơi 2: "
-    if whowin == 1:
+    score1 = "Điểm người chơi 1: "
+    score2 = "Điểm người chơi 2: "
+    if whowin % 2 == 0:
+        score2 = "Điểm Agent: "
+    if whowin == 0 or whowin == 1:
         option = "Người chơi 1 thắng!"
     elif whowin == 2:
         option = "Agent thắng!"
-        score2=" Điểm Agent: "
     elif whowin == 3:
         option = "Người chơi 2 thắng!"
     else:
-        option = "Đây là trận hòa!"
-        if whowin==0:
-            score2="Điểm Agent: "
+        option = "Đây là một trận hòa!"
     text = font_end.render(option, False, boxcontent)
     tet_coor = text.get_rect(center=(650, 410))
     screen.blit(text, tet_coor)
-    text2=font_number.render(score1+str(player1score),False,boxcontent)
-    tet2_coor=text2.get_rect(center=(650,450))
-    screen.blit(text2,tet2_coor)
-    text3=font_number.render(score2+str(player2score),False,boxcontent)
-    tet3_coor=text3.get_rect(center=(650,490))
-    screen.blit(text3,tet3_coor)
+    text2 = font_number.render(score1+str(player1score), False, boxcontent)
+    tet2_coor = text2.get_rect(center=(650, 450))
+    screen.blit(text2, tet2_coor)
+    text3 = font_number.render(score2+str(player2score), False, boxcontent)
+    tet3_coor = text3.get_rect(center=(650, 490))
+    screen.blit(text3, tet3_coor)
     drawbutton(screen, "Thoát", 675, 545)
     drawbutton(screen, "Chơi mới", 475, 545)
     act = -1
@@ -259,7 +269,7 @@ def winner(screen, whowin,player1score,player2score):
         pygame.display.update()
 
 
-def perform_action(state: GameState, pointer: GamePointer, playturn, numofps, opt2):
+def perform_action(screen, state: GameState, pointer: GamePointer, playturn, numofps, opt2):
     is_upside = (pointer.id in range(1, 6))
     score = 0
     is_continue = True
@@ -352,22 +362,27 @@ def perform_action(state: GameState, pointer: GamePointer, playturn, numofps, op
 
 
 # support funcs
-def check_end(state: GameState, numofps):
+def check_end(screen, state: GameState, numofps):
     if state.is_end_state():
-        pygame.time.delay(500)
         winner = state.find_winner()
+        draw_state(screen, state, -1, numofps, -1)
+        pygame.display.update()
+        pygame.time.delay(500)
         if winner == "Player 1":
-            return 1
+            if numofps == 1:
+                return 0
+            else:
+                return 1
         elif winner == "Player 2":
             if numofps == 1:
                 return 2
             else:
                 return 3
         elif winner == "Draw":
-            if numofps==1:
-                return 0
-            elif numofps==2:
-                return 10
+            if numofps == 1:
+                return 4
+            elif numofps == 2:
+                return 5
         else:
             return -2
     if state.call == -99:
@@ -447,7 +462,7 @@ def draw_state(screen, state: GameState, playturn, numofps, opt2):
             st = "Easy"
         elif opt2 == 1:
             st = "Intermediate"
-        else:
+        elif opt2 == 2:
             st = "Hard"
         option = "Agent " + st
     else:
@@ -473,7 +488,7 @@ def draw_state(screen, state: GameState, playturn, numofps, opt2):
     if playturn == 0:
         pygame.draw.polygon(
             screen, white, ((1080, 475), (1035, 450), (1035, 500)))
-    else:
+    elif playturn == 1 or playturn == 2:
         pygame.draw.polygon(
             screen, white, ((230, 175), (275, 150), (275, 200)))
 
@@ -530,19 +545,19 @@ def draw_pile(screen, num, pos, special=1):
         draw_rock(screen, (x+61, y+52), 2, 1)
         draw_rock(screen, (x+12, y+17), 1, 2)
         draw_rock(screen, (x+59, y+25), 2, 2)
-        draw_rock(screen, (x+45, y+55), 0, 2)
+        draw_rock(screen, (x+45, y+55), 0, 0)
     elif num == 6:
         draw_rock(screen, (x+12, y+32), 0, 1)
         draw_rock(screen, (x+51, y+30), 2, 1)
         draw_rock(screen, (x+31, y+17), 1, 2)
-        draw_rock(screen, (x+44, y+15), 2, 2)
+        draw_rock(screen, (x+44, y+15), 2, 0)
         draw_rock(screen, (x+68, y+37), 0, 2)
         draw_rock(screen, (x+27, y+45), 0, 0)
     elif num >= 7:
         draw_rock(screen, (x+21, y+48), 0, 1)
         draw_rock(screen, (x+12, y+30), 2, 1)
         draw_rock(screen, (x+26, y+36), 1, 2)
-        draw_rock(screen, (x+56, y+48), 2, 2)
+        draw_rock(screen, (x+56, y+48), 2, 0)
         draw_rock(screen, (x+74, y+32), 0, 2)
         draw_rock(screen, (x+73, y+26), 0, 0)
         draw_rock(screen, (x+48, y+59), 1, 1)

@@ -2,6 +2,8 @@ from funcs import *
 
 
 def main():
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    pygame.display.set_caption("Ô ăn quan")
     step_1 = -9
     step_2 = [-9, 0]
     step_3 = [-9, 0]
