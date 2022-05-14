@@ -181,9 +181,9 @@ def everything(screen, numofps, opt, opt2, opt0):
         if opt2==0:
             agent1=GreedyAgent()
         elif opt2==1:
-            agent1=MinimaxAgent(gstate=state, reversed=False, dept=2)
+            agent1=MinimaxAgent(gstate=state, reversed=True, dept=2)
         elif opt2==2:
-            agent1=AlphaBetaAgent(gstate=state, reversed=False, dept=6)
+            agent1=AlphaBetaAgent(gstate=state, reversed=True, dept=6)
     draw_state(screen, state, playturn, numofps, opt2, opt0)
     pygame.display.update()
     pau = False
