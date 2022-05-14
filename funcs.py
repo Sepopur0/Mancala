@@ -40,7 +40,9 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
     bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
     bg_img.set_alpha(40)
     screen.blit(bg_img, (0, 0))
-    screen.blit(font.render("Tùy chọn", False, boxcontent), (405, 475))
+    str1=font.render("Thứ tự", False, boxcontent)
+    str1_rect=str1.get_rect(center=(450,485))
+    screen.blit(str1,str1_rect)
     option = ""
     coor = []
     if opt == 2:
@@ -48,19 +50,23 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
         option = "P2 trước"
         coor = option_coor_0
     elif opt == 1:
-        drawbutton(screen, "P1 trước", 375, 500)
-        option = "Agent trước"
+        drawbutton(screen, "Người trước", 375, 500)
+        option = "Máy trước"
         coor = option_coor_1
-        screen.blit(font.render("Độ khó", False, boxcontent), (615, 475))
+        str2=font.render("Độ khó", False, boxcontent)
+        str2_rect=str2.get_rect(center=(650,485))
+        screen.blit(str2,str2_rect)
         drawbutton(screen, "Dễ", 575, 500)
     else:
-        drawbutton(screen, "Agent 1 trước", 375, 500)
-        option = "Agent 2 trước"
+        drawbutton(screen, "Máy 1 trước", 375, 500)
+        option = "Máy 2 trước"
         coor = option_coor_2
-        screen.blit(font.render("Độ khó agent 1",
-                    False, boxcontent), (575, 475))
-        screen.blit(font.render("Độ khó agent 2",
-                    False, boxcontent), (575, 550))
+        str2=font.render("Độ khó máy 1", False, boxcontent)
+        str2_rect=str2.get_rect(center=(650,485))
+        str3=font.render("Độ khó máy 2", False, boxcontent)
+        str3_rect=str3.get_rect(center=(650,560))
+        screen.blit(str2,str2_rect)
+        screen.blit(str3,str3_rect)
         drawbutton(screen, "Random", 575, 500)
         drawbutton(screen, "Random", 575, 575)
     draw_grid(screen)
@@ -83,15 +89,17 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
                 if act == 0:
                     whofirst = (whofirst+1) % 2
                     if whofirst == 0:
-                        if opt >= 1:
+                        if opt ==2:
                             drawbutton(screen, "P1 trước", 375, 500)
+                        elif opt==1:
+                            drawbutton(screen, "Người trước", 375, 500)
                         else:
-                            drawbutton(screen, "Agent 1 trước", 375, 500)
+                            drawbutton(screen, "Máy 1 trước", 375, 500)
                     elif whofirst == 1:
                         drawbutton(screen, option, 375, 500)
                 elif opt == 1:
                     if act == 1:
-                        botdif1 = (botdif1+1) % 7
+                        botdif1 = (botdif1+1) % 3
                         if botdif1 == 0:
                             drawbutton(screen, "Dễ", 575, 500)
                         elif botdif1 == 1:
@@ -99,7 +107,7 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
                         elif botdif1 == 2:
                             drawbutton(screen, "Khó", 575, 500)
                     elif act == 2:
-                        return [whofirst, botdif1, -1]
+                        return [whofirst, -1, botdif1]
                     elif act == 3:
                         return [whofirst, -2, -1]
                 elif opt == 2:
@@ -140,35 +148,42 @@ def everything(screen, numofps, opt, opt2, opt0):
     playturn = numofps*opt
     if numofps == 0:
         playturn = (opt*2+3) % 4
-    if opt2 == 0:
-        agent1 = RandomAgent()
-    elif opt2 == 1:
-        agent1 = GreedyAgent()
-    elif opt2 == 2:
-        agent1 = MinimaxAgent(gstate=state, reversed=True, dept=2)
-    elif opt2 == 3:
-        agent1 = MinimaxAgent(gstate=state, reversed=True, dept=4)
-    elif opt2 == 4:
-        agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=2)
-    elif opt2 == 5:
-        agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=4)
-    elif opt2 == 6:
-        agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=6)
-    # agent0
-    if opt0 == 0:
-        agent0 = RandomAgent()
-    elif opt0 == 1:
-        agent0 = GreedyAgent()
-    elif opt0 == 2:
-        agent0 = MinimaxAgent(gstate=state, reversed=False, dept=2)
-    elif opt0 == 3:
-        agent0 = MinimaxAgent(gstate=state, reversed=False, dept=4)
-    elif opt0 == 4:
-        agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=2)
-    elif opt0 == 5:
-        agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=4)
-    elif opt0 == 6:
-        agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=6)
+        if opt2 == 0:
+            agent1 = RandomAgent()
+        elif opt2 == 1:
+            agent1 = GreedyAgent()
+        elif opt2 == 2:
+            agent1 = MinimaxAgent(gstate=state, reversed=True, dept=2)
+        elif opt2 == 3:
+            agent1 = MinimaxAgent(gstate=state, reversed=True, dept=4)
+        elif opt2 == 4:
+            agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=2)
+        elif opt2 == 5:
+            agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=4)
+        elif opt2 == 6:
+            agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=6)
+        # agent0
+        if opt0 == 0:
+            agent0 = RandomAgent()
+        elif opt0 == 1:
+            agent0 = GreedyAgent()
+        elif opt0 == 2:
+            agent0 = MinimaxAgent(gstate=state, reversed=False, dept=2)
+        elif opt0 == 3:
+            agent0 = MinimaxAgent(gstate=state, reversed=False, dept=4)
+        elif opt0 == 4:
+            agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=2)
+        elif opt0 == 5:
+            agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=4)
+        elif opt0 == 6:
+            agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=6)
+    elif numofps==1:
+        if opt2==0:
+            agent1=GreedyAgent()
+        elif opt2==1:
+            agent1=MinimaxAgent(gstate=state, reversed=False, dept=2)
+        elif opt2==2:
+            agent1=AlphaBetaAgent(gstate=state, reversed=False, dept=6)
     draw_state(screen, state, playturn, numofps, opt2, opt0)
     pygame.display.update()
     pau = False
@@ -303,7 +318,7 @@ def winner(screen, step_3: list):
     bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
     bg_img.set_alpha(40)
     screen.blit(bg_img, (0, 0))
-    agentlist = ["Agent (Dễ)", "Agent (Vừa)", "Agent (Khó)"]
+    agentlist = ["Máy (Dễ)", "Máy (Vừa)", "Máy (Khó)"]
     option = ""
     score1 = ""
     score2 = ""
@@ -550,7 +565,7 @@ def draw_state(screen, state: GameState, playturn, numofps, opt2, opt0):
     diff = ["Dễ", "Vừa", "Khó"]
     if numofps == 1:
         option1 = "Bạn"
-        option2 = "Agent (" + diff[opt2] + ")"
+        option2 = "Máy (" + diff[opt2] + ")"
     elif numofps == 2:
         option2 = "Người chơi 2"
         option1 = "Người chơi 1"
