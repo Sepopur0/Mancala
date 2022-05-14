@@ -21,15 +21,15 @@ class GamePointer():
 
 
 class GameState:
-    def __init__(self, board=INIT_BOARD, call=-1, empty_1=False, empty_2=False, player1_score=0, player2_score=0, player1_debt=0, player2_debt=0):
+    def __init__(self, board=INIT_BOARD, player1_score=0, player2_score=0, player1_debt=0, player2_debt=0, call=-1, empty_1=False, empty_2=False):
         self.board = board
-        self.empty_1 = empty_1
-        self.empty_2 = empty_2
-        self.call = call  # set to -99 if home option is called
         self.player1_score = player1_score
         self.player2_score = player2_score
         self.player1_debt = player1_debt
         self.player2_debt = player2_debt
+        self.empty_1 = empty_1
+        self.empty_2 = empty_2
+        self.call = call  # set to -99 if home option is called
 
     def __call__(self, other):
         self.board = other.board
