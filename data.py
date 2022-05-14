@@ -37,6 +37,8 @@ rock_1 = (128, 128, 128)
 rock_2 = (90, 77, 65)
 rock = (54, 69, 79)
 playzonecolor = (198, 139, 89)
+#other
+agentslist =["Random","Greedy","Minimax_2","Minimax_4","AlphaBeta_2","AlphaBeta_4","AlphaBeta_6"]
 s_1 = pygame.Surface((150, 40))
 s_1.fill(rock_1)
 pygame.draw.rect(s_1, shading, pygame.Rect(
