@@ -233,19 +233,6 @@ def everything(screen, numofps, opt, opt2, opt0):
                             draw_state(screen, state, playturn,
                                        numofps, opt2, opt0)
                             pygame.display.update()
-                            is_upside = (playturn == 0)
-                            if state.no_more_moves(is_upside):
-                                state.scatter_stones(is_upside)
-                                if is_upside:
-                                    for coor in board_coor[1:6]:
-                                        screen.blit(s, coor)
-                                else:
-                                    for coor in board_coor[7:]:
-                                        screen.blit(s, coor)
-                                pygame.display.update()
-                                pygame.time.delay(300)
-                                draw_state(screen, state, playturn,
-                                           numofps, opt2, opt0)
                         init_human = False
                     elif ((act in range(3, 8) and playturn == 0) or (act in range(9, 14) and playturn == 2)) and state.board[act-2] != 0:
                         change_board_coor(screen, act, False)
@@ -261,9 +248,25 @@ def everything(screen, numofps, opt, opt2, opt0):
                         draw_state(screen, state, playturn,
                                    numofps, opt2, opt0)
                 elif act == 1:
+                    change_board_coor(screen, act, False)
+                    pygame.event.clear()
                     return [-2, 0, 0, 0, 0]
             elif ev.type == pygame.QUIT:
                 sys.exit()
+        if playturn==0 or playturn==2:
+            is_upside = (playturn == 0)
+            if state.no_more_moves(is_upside):
+                state.scatter_stones(is_upside)
+                if is_upside:
+                    for coor in board_coor[1:6]:
+                        screen.blit(s, coor)
+                else:
+                    for coor in board_coor[7:]:
+                        screen.blit(s, coor)
+                pygame.display.update()
+                pygame.time.delay(300)
+                draw_state(screen, state, playturn,
+                                            numofps, opt2, opt0)
         if playturn == 1:
             pygame.time.delay(500)
             line = state.board[7:]
@@ -329,7 +332,7 @@ def winner(screen, step_3: list):
         score1 = "bạn"
         score2 = agentlist[opt2]
     else:
-        score1 = "bạn"
+        score1 = "người chơi 1"
         score2 = "người chơi 2"
     if whowin in range(0, 3):
         option = score1[0].upper() + score1[1:] + " thắng!"
