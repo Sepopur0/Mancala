@@ -25,7 +25,7 @@ def start_screen(screen):  # 0 for p1 vs p2; 1 for p1 vs bot
                     screen.blit(s_1, (575, 300+75*act))
                     pygame.display.update()
             elif ev.type == pygame.MOUSEBUTTONUP:
-                if act <= 2:
+                if act>-1 and act <= 2:
                     return 2-act
                 elif act == 3:
                     sys.exit()
@@ -140,8 +140,8 @@ def everything(screen, numofps, opt, opt2, opt0):
     screen.blit(bg_img, (0, 0))
     BOARD = np.full(12, 5)
     state = GameState(board=BOARD)
-    agent1 = Agent()
-    agent0 = Agent()
+    agent1 = None
+    agent0 = None
     init_human = False  # False when not time to choose direc;True otherwwise
     direct = 0  # 1 if counter clockwise; -1 if clockwise
     # 0 for P1; 1 for bot1;2 for P2; 3 for bot2/ next turn: playturn=(numofps+playturn)%(numofps+1)
@@ -149,9 +149,9 @@ def everything(screen, numofps, opt, opt2, opt0):
     if numofps == 0:
         playturn = (opt*2+3) % 4
         if opt2 == 0:
-            agent1 = RandomAgent()
+            agent1 = RandomAgent(gstate=state,reversed=True)
         elif opt2 == 1:
-            agent1 = GreedyAgent()
+            agent1 = GreedyAgent(gstate=state,reversed=True)
         elif opt2 == 2:
             agent1 = MinimaxAgent(gstate=state, reversed=True, dept=2)
         elif opt2 == 3:
@@ -164,9 +164,9 @@ def everything(screen, numofps, opt, opt2, opt0):
             agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=6)
         # agent0
         if opt0 == 0:
-            agent0 = RandomAgent()
+            agent0 = RandomAgent(gstate=state,reversed=False)
         elif opt0 == 1:
-            agent0 = GreedyAgent()
+            agent0 = GreedyAgent(gstate=state,reversed=False)
         elif opt0 == 2:
             agent0 = MinimaxAgent(gstate=state, reversed=False, dept=2)
         elif opt0 == 3:
@@ -179,7 +179,7 @@ def everything(screen, numofps, opt, opt2, opt0):
             agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=6)
     elif numofps==1:
         if opt2==0:
-            agent1=GreedyAgent()
+            agent1=GreedyAgent(gstate=state,reversed=True)
         elif opt2==1:
             agent1=MinimaxAgent(gstate=state, reversed=True, dept=2)
         elif opt2==2:
