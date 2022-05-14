@@ -23,10 +23,11 @@ direct_coor = []
 board_coor = [(930, 270), (815, 325), (705, 325), (595, 325), (485, 325),
               (375, 325), (270, 270), (375, 215), (485, 215), (595, 215), (705, 215), (815, 215)]
 # font
-font = pygame.font.SysFont('calibri', 25, True, False)
-font_number = pygame.font.SysFont('calibri', 30, True, False)
+font = pygame.font.SysFont('calibri',22,True,False)
+
+font_number = pygame.font.SysFont('calibri', 26, True, False)
 font_title = pygame.font.SysFont('opensansregular', 100, True, True)
-font_end = pygame.font.SysFont('calibri', 40, True, True)
+font_end = pygame.font.SysFont('calibri', 35, True, True)
 # colors
 black = (0, 0, 0)
 boxcolor = (244, 199, 171)  # mau o
