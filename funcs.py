@@ -61,8 +61,8 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
                     False, boxcontent), (575, 475))
         screen.blit(font.render("Độ khó agent 2",
                     False, boxcontent), (575, 550))
-        drawbutton(screen, "Dễ", 575, 500)
-        drawbutton(screen, "Dễ", 575, 575)
+        drawbutton(screen, "Random", 575, 500)
+        drawbutton(screen, "Random", 575, 575)
     draw_grid(screen)
     drawbutton(screen, "Xác nhận", 775, 500)
     drawbutton(screen, "Trang chính", 775, 575)
@@ -91,7 +91,7 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
                         drawbutton(screen, option, 375, 500)
                 elif opt == 1:
                     if act == 1:
-                        botdif1 = (botdif1+1) % 3
+                        botdif1 = (botdif1+1) % 7
                         if botdif1 == 0:
                             drawbutton(screen, "Dễ", 575, 500)
                         elif botdif1 == 1:
@@ -109,21 +109,11 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
                         return [whofirst, -2, -1]
                 elif opt == 0:
                     if act == 1:
-                        botdif1 = (botdif1+1) % 3
-                        if botdif1 == 0:
-                            drawbutton(screen, "Dễ", 575, 500)
-                        elif botdif1 == 1:
-                            drawbutton(screen, "Vừa", 575, 500)
-                        elif botdif1 == 2:
-                            drawbutton(screen, "Khó", 575, 500)
+                        botdif1 = (botdif1+1) % 7
+                        drawbutton(screen, agentslist[botdif1], 575, 500)
                     elif act == 2:
-                        botdif2 = (botdif2+1) % 3
-                        if botdif2 == 0:
-                            drawbutton(screen, "Dễ", 575, 575)
-                        elif botdif2 == 1:
-                            drawbutton(screen, "Vừa", 575, 575)
-                        elif botdif2 == 2:
-                            drawbutton(screen, "Khó", 575, 575)
+                        botdif2 = (botdif2+1) % 7
+                        drawbutton(screen, agentslist[botdif2], 575, 575)
                     elif act == 3:
                         return [whofirst, botdif1, botdif2]
                     elif act == 4:
@@ -151,16 +141,33 @@ def everything(screen, numofps, opt, opt2, opt0):
     if numofps == 0:
         playturn = (opt*2+3) % 4
     if opt2 == 0:
-        agent1 = GreedyAgent(gstate=state, reversed=True)
+        agent1 = RandomAgent()
     elif opt2 == 1:
-        agent1 = MinimaxAgent(gstate=state, reversed=True, dept=2)
+        agent1 = GreedyAgent()
     elif opt2 == 2:
+        agent1 = MinimaxAgent(gstate=state, reversed=True, dept=2)
+    elif opt2 == 3:
+        agent1 = MinimaxAgent(gstate=state, reversed=True, dept=4)
+    elif opt2 == 4:
+        agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=2)
+    elif opt2 == 5:
+        agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=4)
+    elif opt2 == 6:
         agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=6)
+    # agent0
     if opt0 == 0:
-        agent0 = GreedyAgent(gstate=state, reversed=False)
+        agent0 = RandomAgent()
     elif opt0 == 1:
-        agent0 = MinimaxAgent(gstate=state, reversed=False, dept=2)
+        agent0 = GreedyAgent()
     elif opt0 == 2:
+        agent0 = MinimaxAgent(gstate=state, reversed=False, dept=2)
+    elif opt0 == 3:
+        agent0 = MinimaxAgent(gstate=state, reversed=False, dept=4)
+    elif opt0 == 4:
+        agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=2)
+    elif opt0 == 5:
+        agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=4)
+    elif opt0 == 6:
         agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=6)
     draw_state(screen, state, playturn, numofps, opt2, opt0)
     pygame.display.update()
@@ -204,7 +211,7 @@ def everything(screen, numofps, opt, opt2, opt0):
                             res = perform_action(
                                 screen, state, point, playturn, numofps, opt2, opt0)
                             state = res
-                            re = check_end(screen, state, numofps,opt2,opt0)
+                            re = check_end(screen, state, numofps, opt2, opt0)
                             if re != -99:
                                 return [re, state.player1_score, state.player2_score, opt2, opt0]
                             playturn = (numofps+playturn) % (numofps*2)
@@ -222,7 +229,8 @@ def everything(screen, numofps, opt, opt2, opt0):
                                         screen.blit(s, coor)
                                 pygame.display.update()
                                 pygame.time.delay(300)
-                                draw_state(screen, state, playturn, numofps, opt2, opt0)
+                                draw_state(screen, state, playturn,
+                                           numofps, opt2, opt0)
                         init_human = False
                     elif ((act in range(3, 8) and playturn == 0) or (act in range(9, 14) and playturn == 2)) and state.board[act-2] != 0:
                         change_board_coor(screen, act, False)
@@ -254,7 +262,7 @@ def everything(screen, numofps, opt, opt2, opt0):
             pygame.display.update()
             state = perform_action(screen, state, point,
                                    playturn, numofps, opt2, opt0)
-            re = check_end(screen, state, numofps,opt2,opt0)
+            re = check_end(screen, state, numofps, opt2, opt0)
             if re != -99:
                 return [re, state.player1_score, state.player2_score, opt2, opt0]
             if numofps == 0:
@@ -276,7 +284,7 @@ def everything(screen, numofps, opt, opt2, opt0):
             pygame.display.update()
             state = perform_action(screen, state, point,
                                    playturn, numofps, opt2, opt0)
-            re = check_end(screen, state, numofps,opt2,opt0)
+            re = check_end(screen, state, numofps, opt2, opt0)
             if re != -99:
                 return [re, state.player1_score, state.player2_score, opt2, opt0]
             playturn = (playturn+2) % 4
@@ -295,15 +303,13 @@ def winner(screen, step_3: list):
     bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
     bg_img.set_alpha(40)
     screen.blit(bg_img, (0, 0))
-    agent1list = ["Agent 1 (Dễ)", "Agent 1 (Vừa)", "Agent 1 (Khó)"]
-    agent2list = ["Agent 2 (Dễ)", "Agent 2 (Vừa)", "Agent 2 (Khó)"]
     agentlist = ["Agent (Dễ)", "Agent (Vừa)", "Agent (Khó)"]
     option = ""
     score1 = ""
     score2 = ""
     if whowin in [0, 3, 6]:
-        score1 = agent1list[opt0]
-        score2 = agent2list[opt2]
+        score1 = agentslist[opt0]
+        score2 = agentslist[opt2]
     elif whowin in [1, 4, 7]:
         score1 = "bạn"
         score2 = agentlist[opt2]
@@ -394,7 +400,8 @@ def perform_action(screen, state: GameState, pointer: GamePointer, playturn, num
                             screen.blit(font.render(
                                 "Trò chơi tạm dừng", False, boxcontent), (600, 590))
                         else:
-                            draw_state(screen, state, playturn, numofps, opt2, opt0)                           
+                            draw_state(screen, state, playturn,
+                                       numofps, opt2, opt0)
                     elif act == 1:
                         pygame.event.clear()
                         state.call = -99
@@ -439,7 +446,7 @@ def perform_action(screen, state: GameState, pointer: GamePointer, playturn, num
 
 
 # support funcs
-def check_end(screen, state: GameState, numofps,opt2,opt0):
+def check_end(screen, state: GameState, numofps, opt2, opt0):
     if state.is_end_state():
         winner = state.find_winner()
         draw_state(screen, state, -1, numofps, opt2, opt0)
@@ -548,8 +555,8 @@ def draw_state(screen, state: GameState, playturn, numofps, opt2, opt0):
         option2 = "Người chơi 2"
         option1 = "Người chơi 1"
     else:
-        option1 = "Agent 1 (" + diff[opt0] + ")"
-        option2 = "Agent 2 (" + diff[opt2] + ")"
+        option1 = agentslist[opt0]
+        option2 = agentslist[opt2]
     for i in range(0, 12):
         if state.board[i] >= 5 and ((i == 0 and state.empty_1 == False) or (i == 6 and state.empty_2 == False)):
             draw_rock(screen, board_coor[i], 1, 2, special=True)
