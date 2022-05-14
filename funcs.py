@@ -204,7 +204,7 @@ def everything(screen, numofps, opt, opt2, opt0):
                             res = perform_action(
                                 screen, state, point, playturn, numofps, opt2, opt0)
                             state = res
-                            re = check_end(screen, state, numofps)
+                            re = check_end(screen, state, numofps,opt2,opt0)
                             if re != -99:
                                 return [re, state.player1_score, state.player2_score, opt2, opt0]
                             playturn = (numofps+playturn) % (numofps*2)
@@ -254,7 +254,7 @@ def everything(screen, numofps, opt, opt2, opt0):
             pygame.display.update()
             state = perform_action(screen, state, point,
                                    playturn, numofps, opt2, opt0)
-            re = check_end(screen, state, numofps)
+            re = check_end(screen, state, numofps,opt2,opt0)
             if re != -99:
                 return [re, state.player1_score, state.player2_score, opt2, opt0]
             if numofps == 0:
@@ -276,7 +276,7 @@ def everything(screen, numofps, opt, opt2, opt0):
             pygame.display.update()
             state = perform_action(screen, state, point,
                                    playturn, numofps, opt2, opt0)
-            re = check_end(screen, state, numofps)
+            re = check_end(screen, state, numofps,opt2,opt0)
             if re != -99:
                 return [re, state.player1_score, state.player2_score, opt2, opt0]
             playturn = (playturn+2) % 4
@@ -439,10 +439,10 @@ def perform_action(screen, state: GameState, pointer: GamePointer, playturn, num
 
 
 # support funcs
-def check_end(screen, state: GameState, numofps):
+def check_end(screen, state: GameState, numofps,opt2,opt0):
     if state.is_end_state():
         winner = state.find_winner()
-        draw_state(screen, state, -1, numofps, -1, -1)
+        draw_state(screen, state, -1, numofps, opt2, opt0)
         pygame.display.update()
         pygame.time.delay(1500)
         if winner == "Player 1":
