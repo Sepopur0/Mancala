@@ -61,9 +61,9 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
         drawbutton(screen, "Máy 1 trước", 375, 500)
         option = "Máy 2 trước"
         coor = option_coor_2
-        str2=font.render("Độ khó máy 1", False, boxcontent)
+        str2=font.render("Giải thuật máy 1", False, boxcontent)
         str2_rect=str2.get_rect(center=(650,485))
-        str3=font.render("Độ khó máy 2", False, boxcontent)
+        str3=font.render("Giải thuật máy 2", False, boxcontent)
         str3_rect=str3.get_rect(center=(650,560))
         screen.blit(str2,str2_rect)
         screen.blit(str3,str3_rect)
