@@ -14,7 +14,7 @@ def main():
         if step_2[1] == -2:
             step_2 = [-9, 0, 0]
             continue
-        step_3 = everything(screen, step_1, step_2[0], step_2[1], step_2[2])
+        step_3 = everything(screen, step_1, step_2[0], step_2[2], step_2[1])
         if step_3[0] == -2:
             step_2 = [-9, 0, 0]
             step_3 = []
