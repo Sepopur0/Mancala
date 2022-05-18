@@ -248,7 +248,7 @@ def everything(screen, numofps, opt, opt2, opt0):
                         draw_state(screen, state, playturn,
                                    numofps, opt2, opt0)
                 elif act == 1:
-                    change_board_coor(screen, act, False)
+                    change_board_coor(screen, act, True)
                     pygame.event.clear()
                     return [-2, 0, 0, 0, 0]
             elif ev.type == pygame.QUIT:
