@@ -99,13 +99,15 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
                         drawbutton(screen, option, 375, 500)
                 elif opt == 1:
                     if act == 1:
-                        botdif1 = (botdif1+1) % 3
+                        botdif1 = (botdif1+1) % 4
                         if botdif1 == 0:
                             drawbutton(screen, "Dễ", 575, 500)
                         elif botdif1 == 1:
                             drawbutton(screen, "Vừa", 575, 500)
                         elif botdif1 == 2:
                             drawbutton(screen, "Khó", 575, 500)
+                        elif botdif1==3:
+                            drawbutton(screen, "Q-Learning", 575, 500)
                     elif act == 2:
                         return [whofirst, -1, botdif1]
                     elif act == 3:
@@ -117,10 +119,10 @@ def options(screen, opt):  # 0 for p1 first, 1 for p2/bot first; if play w/ bot:
                         return [whofirst, -2, -1]
                 elif opt == 0:
                     if act == 1:
-                        botdif1 = (botdif1+1) % 7
+                        botdif1 = (botdif1+1) % 8
                         drawbutton(screen, agentslist[botdif1], 575, 500)
                     elif act == 2:
-                        botdif2 = (botdif2+1) % 7
+                        botdif2 = (botdif2+1) % 8
                         drawbutton(screen, agentslist[botdif2], 575, 575)
                     elif act == 3:
                         return [whofirst, botdif1, botdif2]
@@ -162,6 +164,8 @@ def everything(screen, numofps, opt, opt2, opt0):
             agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=4)
         elif opt2 == 6:
             agent1 = AlphaBetaAgent(gstate=state, reversed=True, dept=6)
+        elif opt2==7:
+            agent1=QLearningAgent(gstate=state,reversed=True)
         # agent0
         if opt0 == 0:
             agent0 = RandomAgent(gstate=state,reversed=False)
@@ -177,6 +181,8 @@ def everything(screen, numofps, opt, opt2, opt0):
             agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=4)
         elif opt0 == 6:
             agent0 = AlphaBetaAgent(gstate=state, reversed=False, dept=6)
+        elif opt0==7:
+            agent0=QLearningAgent(gstate=state,reversed=False)
     elif numofps==1:
         if opt2==0:
             agent1=GreedyAgent(gstate=state,reversed=True)
@@ -184,6 +190,8 @@ def everything(screen, numofps, opt, opt2, opt0):
             agent1=MinimaxAgent(gstate=state, reversed=True, dept=2)
         elif opt2==2:
             agent1=AlphaBetaAgent(gstate=state, reversed=True, dept=6)
+        elif opt2==3:
+            agent1=QLearningAgent(gstate=state,reversed=True)
     draw_state(screen, state, playturn, numofps, opt2, opt0)
     pygame.display.update()
     pau = False
@@ -321,7 +329,7 @@ def winner(screen, step_3: list):
     bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height))
     bg_img.set_alpha(40)
     screen.blit(bg_img, (0, 0))
-    agentlist = ["Máy (Dễ)", "Máy (Vừa)", "Máy (Khó)"]
+    agentlist = ["Máy (Dễ)", "Máy (Vừa)", "Máy (Khó)", "Máy (Q-Learning)"]
     option = ""
     score1 = ""
     score2 = ""
@@ -565,7 +573,7 @@ def draw_state(screen, state: GameState, playturn, numofps, opt2, opt0):
     drawbutton(screen, "Tạm dừng", 475, 545)
     option2 = ""
     option1 = ""
-    diff = ["Dễ", "Vừa", "Khó"]
+    diff = ["Dễ", "Vừa", "Khó","Q-Learning"]
     if numofps == 1:
         option1 = "Bạn"
         option2 = "Máy (" + diff[opt2] + ")"
