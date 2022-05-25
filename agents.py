@@ -1,5 +1,7 @@
 from data import *
-# import numpy as np
+import pickle
+from os.path import exists
+import numpy as np
 # INIT_BOARD = np.full(12, 5)
 # INT_MAX = np.iinfo(np.int32).max
 # INT_MIN = np.iinfo(np.int32).min
@@ -13,6 +15,15 @@ class GamePointer():
     def __str__(self):
         return str((self.id, self.direction))
 
+    def __hash__(self):
+        return hash((self.id, self.direction))
+
+    def __eq__(self, object):
+        if isinstance(object, GamePointer):
+            return (self.id, self.direction) == (object.id, object.direction)
+
+        return NotImplemented
+
     def copy(self):
         return GamePointer(self.id, self.direction)
 
@@ -22,7 +33,7 @@ class GamePointer():
 
 class GameState:
     def __init__(self, board=INIT_BOARD, player1_score=0, player2_score=0, player1_debt=0, player2_debt=0, call=-1, empty_1=False, empty_2=False):
-        self.board = board
+        self.board = board.copy()
         self.player1_score = player1_score
         self.player2_score = player2_score
         self.player1_debt = player1_debt
@@ -37,6 +48,21 @@ class GameState:
         self.player2_score = other.player2_score
         self.player1_debt = other.player1_debt
         self.player2_debt = other.player2_debt
+
+    def __hash__(self):
+        return hash(self.__key)
+
+    def __eq__(self, object):
+        if isinstance(object, GameState):
+            return self.__key == object.__key
+
+        return NotImplemented
+
+    @property
+    def __key(self):
+        tup_board = tuple(self.board)
+        return (tup_board, self.player1_score, self.player2_score, self.player1_debt, self.player2_debt)
+
 
     @property
     def player1_true_score(self):
@@ -214,9 +240,9 @@ class Agent:
     def find_best_move(self):
         return GamePointer(), GameState()
 
-    # def move(self):
-    #     best_state = self.find_best_move()[1]
-    #     self.gstate(best_state)
+    def move(self):
+        best_state = self.find_best_move()[1]
+        self.gstate(best_state)
 
     # def perform(self, pointer: GamePointer):
     #     self.gstate.to_next_state(pointer)
@@ -353,3 +379,148 @@ class AlphaBetaAgent(MinimaxAgent):
             return best_move, best_state, best_score
 
         return minimax_alpha_beta(self.gstate, self.dept, self.is_upside)[:2]
+
+
+class QLearningAgent(Agent):
+    class QTable:
+        def __init__(self):
+            self.table = {}
+
+        def __getitem__(self, key):
+            if isinstance(key, GameState):
+                self.table.setdefault(key, {})
+                return self.table[key]
+            if key[0] in self.table:
+                if key[1] in self.table[key[0]]:
+                    return self.table[key[0]][key[1]]
+                else:
+                    self.table[key[0]][key[1]] = 0
+            else:
+                self.table[key[0]] = {key[1]: 0}
+            return 0
+
+        def __setitem__(self, key, values):
+            if key[0] in self.table:
+                self.table[key[0]][key[1]] = values
+            else:
+                self.table[key[0]] = {key[1]: values}
+
+        def save(self, path):
+            with open(path, "wb") as f:
+                pickle.dump(self.__dict__, f, 2)
+
+        def load(self, path):
+            with open(path, "rb") as f:
+                self.__dict__.update(pickle.load(f))
+
+    def __init__(self, gstate=GameState(), reversed=False):
+        super().__init__(gstate, reversed)
+        self.q_tables = self.QTable()
+
+        path_to_data = "q_tables.pkl"
+        if exists(path_to_data):
+            self.q_tables.load(path_to_data)
+        else:
+            self.train(1000)
+            self.q_tables.save(path_to_data)
+
+    def best_f(self, l, key=None):
+        if l:
+            return min(l, key=key) if self.reversed else max(l, key=key)
+        else:
+            return 0
+
+    def select_action(self, state: GameState, eps=0.3):
+        action_space = self.q_tables[state]
+        actions = []
+        if not action_space or np.random.uniform(0, 1) < eps:
+            if state.no_more_moves(self.is_upside):
+                state.scatter_stones(self.is_upside)
+
+            actions = list(state.possible_move(self.is_upside))
+            for act in actions:
+                self.q_tables[state].setdefault(act, 0)
+        else:
+            best_v = self.best_f(action_space.values())
+            actions = [k for k, v in action_space.items() if v == best_v]
+
+        i = np.random.randint(len(actions))
+        return actions[i]
+
+    def train(self, round=10000, lr=0.5, gamma=0.9, eps=0.3):
+        def fight(opponent: Agent, p1_first=True, reversed=False):
+            gstate = GameState()
+            self.reversed = reversed
+            opponent(gstate, reversed=not reversed)
+
+            if not p1_first:
+                opponent.move()
+
+            while True:
+                old_state = gstate.copy()
+
+                action = self.select_action(gstate, eps)
+
+                old_score = self.q_tables[old_state, action]
+
+                gstate.to_next_state(action.copy())
+                if gstate.is_end_state():
+                    bf = min if self.reversed else max
+                    self.q_tables[old_state, action] = bf(
+                        gstate.heuristic_score, old_score)
+                    break
+
+                opponent.move()
+
+                if gstate.is_end_state():
+                    worst_f = max if self.reversed else min
+                    self.q_tables[old_state, action] = worst_f(
+                        gstate.heuristic_score, old_score)
+                    break
+                else:
+                    reward = gstate.heuristic_score
+                    self.q_tables[old_state, action] = old_score + lr * \
+                        (reward + gamma *
+                         self.best_f(self.q_tables[gstate].values()) - old_score)
+
+            return gstate.find_winner()
+
+        def repeat_fight(opponent: Agent, round=100):
+            freq = {"Player 1": 0, "Player 2": 0, "Draw": 0}
+            quarter = round//4
+            for i in range(quarter):
+                winner = fight(opponent)
+                freq[winner] += 1
+
+            for i in range(quarter):
+                winner = fight(opponent, p1_first=False)
+                freq[winner] += 1
+
+            reverse = {"Player 1": "Player 2",
+                       "Player 2": "Player 1", "Draw": "Draw"}
+
+            for i in range(quarter):
+                winner = fight(opponent, reversed=True)
+                freq[reverse[winner]] += 1
+
+            for i in range(round - 3*quarter):
+                winner = fight(opponent, p1_first=False, reversed=True)
+                freq[reverse[winner]] += 1
+
+            return freq
+
+        temp = self.reversed
+        # freq = repeat_fight(RandomAgent(), round=round)
+        # for key, value in freq.items():
+        #     print(f"{key}: {value}")
+        # freq = repeat_fight(GreedyAgent(), round=round)
+        # for key, value in freq.items():
+        #     print(f"{key}: {value}")
+        freq = repeat_fight(AlphaBetaAgent(dept=2), round=round)
+        for key, value in freq.items():
+            print(f"{key}: {value}")
+        self.reversed = temp
+
+    def find_best_move(self):
+        action = self.select_action(self.gstate, eps=-1)
+        return action, self.gstate.copy().to_next_state(action.copy())
